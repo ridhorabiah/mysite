@@ -4,8 +4,36 @@
 
 {% block content %}
   <div class="content-section">
-    <h1>LOREM IPSUM</h1>
-    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Blanditiis modi facere nihil fuga voluptates eius rerum dignissimos quasi necessitatibus illo ipsa, laudantium nemo quae magnam ut nobis odit aspernatur! Tempora.
-    Quidem nemo aliquid odit, ullam corrupti aspernatur, explicabo nesciunt enim commodi nihil laborum at veniam quo, rem non. Praesentium tempore corporis facilis modi doloremque sapiente tenetur deleniti expedita, id quas.</p>
+    <table id="appTable" class="table table-striped table-bordered" width="100%">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Platform</th>
+          <th>Database</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for app in apps %}
+          <tr>
+            <td>{{ app.name }}</td>
+            <td>{{ app.status }}</td>
+            <td>{{ app.platform }}</td>
+            <td>{{ app.database }}</td>
+            <td><a href="{{ url_for('app', app_id=app.id) }}">Detail</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
+
 {% endblock content %}
+
+{% block js %}
+<script>
+$(document).ready(function () {
+    $('#appTable').DataTable();
+});
+</script>
+{% endblock js %}

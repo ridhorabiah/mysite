@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Length, EqualTo, ValidationError
-from mysite.models import User
+from mysite.models import User, Application
 from flask_login import current_user
 
 
@@ -40,9 +40,15 @@ class UpdateAccountForm(FlaskForm):
                 raise ValidationError('That username is taken. Please choose a different one.')
 
 
-# class ApplicationForm(FlaskForm):
-#     name = StringField('Name', validators=[DataRequired(), Length(max=30)])
-#     description = 
-#     status = StringField('Status', validators=[DataRequired(), Length(max=20)])
-#     platform = StringField('Platform', validators=[DataRequired(), Length(max=30)])
-#     database = StringField('Database', validators=[DataRequired(), Length(max=30)])
+class ApplicationForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(), Length(max=30)])
+    description = TextAreaField('Description', validators=[DataRequired()])
+    status = StringField('Status', validators=[DataRequired(), Length(max=20)])
+    platform = StringField('Platform', validators=[DataRequired(), Length(max=30)])
+    database = StringField('Database', validators=[DataRequired(), Length(max=30)])
+    submit = SubmitField('Post')
+
+    def validate_name(self, name):
+        app = Application.query.filter_by(name=name.data).first()
+        if app:
+            raise ValidationError('That name is taken. Please choose a different one.')

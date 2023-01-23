@@ -13,6 +13,11 @@ body {
     font-family: "Oswald", sans-serif;
 }
 
+table {
+    font-family: Helvetica, sans-serif;
+    font-size: small;
+}
+
 h1, h2, h3, h4, h5, h6 {
     /* font-family: "Oswald", sans-serif; */
     color: #444444;

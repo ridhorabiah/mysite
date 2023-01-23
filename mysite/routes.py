@@ -4,13 +4,14 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request
 from mysite import app, db, bcrypt
 from mysite.models import usages, WorkUnit, Employee, User, Application
-from mysite.forms import LoginForm, RegisterForm, UpdateAccountForm
+from mysite.forms import LoginForm, RegisterForm, UpdateAccountForm, ApplicationForm
 from flask_login import login_user, current_user, logout_user, login_required
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    apps = Application.query.all()
+    return render_template('index.html', apps=apps)
 
 @app.route('/about')
 def about():
@@ -86,3 +87,32 @@ def account():
         form.username.data = current_user.username
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
     return render_template('account.html', image_file=image_file, form=form)
+
+
+@app.route('/app/new', methods=['GET', 'POST'])
+@login_required
+def new_app():
+    form = ApplicationForm()
+    if form.validate_on_submit():
+        app = Application(
+            name=form.name.data, description=form.description.data, status=form.status.data,
+            platform=form.platform.data, database=form.database.data, user_id=current_user.id)
+        db.session.add(app)
+        db.session.commit()
+        flash('New app has been added!', 'success')
+        return redirect(url_for('index'))
+    return render_template('add_app.html', form=form)
+
+
+@app.route('/app/<int:app_id>')
+def app(app_id):
+    app = Application.query.get_or_404(app_id)
+    return render_template('app.html', app=app)
+
+
+# @login_required
+# @app.route('/app/<int:app_id>/update')
+# def update_app(app_id):
+#     app = Application.query.get_or_404(app_id)
+#     if app.posted_by != 
+#     return render_template()
