@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+  <div class="content-section">
+    <h1 style="text-align: center;" class="border-bottom pb-2">{{ apk.name|upper }}</h1><br>
+    <h3>Description:</h3>
+    <p style="text-align: justify;">{{ apk.description }}</p>
+    <p>
+      Status : {{ apk.status }}<br>
+      Database : {{ apk.database }}<br>
+      Platform : {{ apk.platform }}<br>
+      Work unit : Biro SDM
+    </p>
+  </div>
+{% endblock content %}

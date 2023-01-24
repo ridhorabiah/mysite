@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}Flasky{% endblock title %}
-
 {% block content %}
   <div class="content-section">
     <table id="appTable" class="table table-striped table-bordered" width="100%">
@@ -15,13 +13,13 @@
         </tr>
       </thead>
       <tbody>
-        {% for app in apps %}
+        {% for apk in apks %}
           <tr>
-            <td>{{ app.name }}</td>
-            <td>{{ app.status }}</td>
-            <td>{{ app.platform }}</td>
-            <td>{{ app.database }}</td>
-            <td><a href="{{ url_for('app', app_id=app.id) }}">Detail</a></td>
+            <td>{{ apk.name }}</td>
+            <td>{{ apk.status }}</td>
+            <td>{{ apk.platform }}</td>
+            <td>{{ apk.database }}</td>
+            <td><a href="{{ url_for('apk', apk_id=apk.id) }}">Detail</a></td>
           </tr>
         {% endfor %}
       </tbody>

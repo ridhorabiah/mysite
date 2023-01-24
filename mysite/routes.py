@@ -1,7 +1,7 @@
 import os
 import secrets
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request, abort
 from mysite import app, db, bcrypt
 from mysite.models import usages, WorkUnit, Employee, User, Application
 from mysite.forms import LoginForm, RegisterForm, UpdateAccountForm, ApplicationForm
@@ -10,12 +10,12 @@ from flask_login import login_user, current_user, logout_user, login_required
 
 @app.route('/')
 def index():
-    apps = Application.query.all()
-    return render_template('index.html', apps=apps)
+    apks = Application.query.all()
+    return render_template('index.html', apks=apks)
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('about.html', title="About")
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -31,7 +31,7 @@ def register():
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
-    return render_template('register.html', form=form)
+    return render_template('register.html', title='Register', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -48,7 +48,7 @@ def login():
             return redirect(next_page) if next_page else redirect(url_for('index'))
         else:
             flash('Login unsuccessful. Please check username and password!', 'danger')
-    return render_template('login.html', form=form)
+    return render_template('login.html', title='Login', form=form)
 
 
 @app.route('/logout')
@@ -86,33 +86,52 @@ def account():
     elif request.method == 'GET':
         form.username.data = current_user.username
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
-    return render_template('account.html', image_file=image_file, form=form)
+    return render_template('account.html', title='Account', image_file=image_file, form=form)
 
 
-@app.route('/app/new', methods=['GET', 'POST'])
+@app.route('/apk/new', methods=['GET', 'POST'])
 @login_required
-def new_app():
+def new_apk():
     form = ApplicationForm()
     if form.validate_on_submit():
-        app = Application(
+        apk = Application(
             name=form.name.data, description=form.description.data, status=form.status.data,
             platform=form.platform.data, database=form.database.data, user_id=current_user.id)
-        db.session.add(app)
+        db.session.add(apk)
         db.session.commit()
-        flash('New app has been added!', 'success')
+        flash('New appplication has been added!', 'success')
         return redirect(url_for('index'))
-    return render_template('add_app.html', form=form)
+    return render_template('add_apk.html', title='New Application',
+                           form=form, legend='New Application')
 
 
-@app.route('/app/<int:app_id>')
-def app(app_id):
-    app = Application.query.get_or_404(app_id)
-    return render_template('app.html', app=app)
+@app.route('/apk/<int:apk_id>')
+def apk(apk_id):
+    apk = Application.query.get_or_404(apk_id)
+    return render_template('apk.html', title='Application', apk=apk)
 
 
-# @login_required
-# @app.route('/app/<int:app_id>/update')
-# def update_app(app_id):
-#     app = Application.query.get_or_404(app_id)
-#     if app.posted_by != 
-#     return render_template()
+@app.route('/apk/<int:apk_id>/update', methods=['GET', 'POST'])
+@login_required
+def update_apk(apk_id):
+    apk = Application.query.get_or_404(apk_id)
+    if current_user.username != 'ADMIN':
+        abort(403)
+    form = ApplicationForm()
+    if form.validate_on_submit():
+        apk.name = form.name.data
+        apk.description = form.description.data
+        apk.status = form.status.data
+        apk.platform = form.platform.data
+        apk.database = form.database.data
+        db.session.commit()
+        flash('This application has been updated!', 'success')
+        return redirect(url_for('apk', apk_id=apk.id))
+    elif request.method == 'GET':
+        form.name.data = apk.name
+        form.description.data = apk.description
+        form.status.data = apk.status
+        form.platform.data = apk.platform
+        form.database.data = apk.database
+    return render_template('add_apk.html', title='Update Application',
+                           form=form, legend='Update Application')

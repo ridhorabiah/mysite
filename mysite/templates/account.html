@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %}Account{% endblock title %}
-
 {% block content %}
   <div class="content-section">
     <div class="media">
@@ -11,7 +9,6 @@
         <p class="text-secondary">
           {{ current_user.owned.name }}<br>
           {{ current_user.owned.nip }}<br>
-          {{ current_user.owned.unit.name }} unit
         </p>
       </div>
     </div>
